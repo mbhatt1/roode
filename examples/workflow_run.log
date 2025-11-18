@@ -1,0 +1,37 @@
+2025-11-13 23:39:15,055 - __main__ - INFO - Checkpoint saved to /Users/mbhatt/Roo-Code/roo-code-python/workflow_checkpoint.json
+2025-11-13 23:39:15,055 - __main__ - INFO - Checkpoint saved to /Users/mbhatt/Roo-Code/roo-code-python/workflow_checkpoint.json
+2025-11-13 23:42:34,615 - __main__ - INFO - Checkpoint loaded from /Users/mbhatt/Roo-Code/roo-code-python/workflow_checkpoint.json
+2025-11-13 23:52:18,158 - __main__ - INFO - Checkpoint loaded from /Users/mbhatt/Roo-Code/roo-code-python/workflow_checkpoint.json
+2025-11-13 23:52:18,260 - __main__ - INFO - Checkpoint saved to /Users/mbhatt/Roo-Code/roo-code-python/workflow_checkpoint.json
+2025-11-13 23:52:18,363 - __main__ - INFO - Checkpoint saved to /Users/mbhatt/Roo-Code/roo-code-python/workflow_checkpoint.json
+2025-11-13 23:52:18,465 - __main__ - INFO - Checkpoint saved to /Users/mbhatt/Roo-Code/roo-code-python/workflow_checkpoint.json
+2025-11-13 23:52:18,567 - __main__ - INFO - Checkpoint saved to /Users/mbhatt/Roo-Code/roo-code-python/workflow_checkpoint.json
+2025-11-13 23:52:18,669 - __main__ - INFO - Checkpoint saved to /Users/mbhatt/Roo-Code/roo-code-python/workflow_checkpoint.json
+2025-11-13 23:56:34,810 - __main__ - INFO - Initialized anthropic client with model claude-sonnet-4-5
+2025-11-13 23:56:34,811 - __main__ - INFO - Checkpoint loaded from /Users/mbhatt/Roo-Code/roo-code-python/workflow_checkpoint.json
+2025-11-13 23:56:34,811 - __main__ - INFO - Creating subtask in code mode
+2025-11-13 23:56:34,811 - __main__ - INFO - Subtask 4c5c3d28-d0be-403f-9803-3cf215166a0a created in code mode
+2025-11-13 23:56:37,484 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-11-13 23:58:01,648 - __main__ - INFO - Checkpoint saved to /Users/mbhatt/Roo-Code/roo-code-python/workflow_checkpoint.json
+2025-11-13 23:58:01,648 - __main__ - INFO - Creating subtask in code mode
+2025-11-13 23:58:01,649 - __main__ - INFO - Subtask c8045ea9-5cd9-44f2-9ddf-ac6aabf7c7e8 created in code mode
+2025-11-13 23:58:03,708 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-11-13 23:58:54,026 - __main__ - INFO - Checkpoint saved to /Users/mbhatt/Roo-Code/roo-code-python/workflow_checkpoint.json
+2025-11-13 23:58:54,026 - __main__ - INFO - Creating subtask in code mode
+2025-11-13 23:58:54,027 - __main__ - INFO - Subtask c3a48d16-da6d-4e03-9593-43094864ad9f created in code mode
+2025-11-13 23:58:55,869 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-11-13 23:59:56,927 - __main__ - INFO - Checkpoint saved to /Users/mbhatt/Roo-Code/roo-code-python/workflow_checkpoint.json
+2025-11-14 00:00:33,286 - __main__ - INFO - Initialized anthropic client with model claude-sonnet-4-5
+2025-11-14 00:00:33,286 - __main__ - INFO - Checkpoint loaded from /Users/mbhatt/Roo-Code/roo-code-python/workflow_checkpoint.json
+2025-11-14 00:00:33,286 - __main__ - INFO - Creating subtask in code mode
+2025-11-14 00:00:33,287 - __main__ - INFO - Subtask 73f48034-fbe2-4b13-84c0-8af9b88d51ce created in code mode
+2025-11-14 00:00:35,261 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-11-14 00:01:33,049 - __main__ - INFO - Checkpoint saved to /Users/mbhatt/Roo-Code/roo-code-python/workflow_checkpoint.json
+2025-11-14 00:01:33,049 - __main__ - INFO - Creating subtask in code mode
+2025-11-14 00:01:33,050 - __main__ - INFO - Subtask e2837953-f355-49ca-a902-aef53a29727a created in code mode
+2025-11-14 00:01:34,961 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-11-14 00:02:34,445 - __main__ - INFO - Checkpoint saved to /Users/mbhatt/Roo-Code/roo-code-python/workflow_checkpoint.json
+2025-11-14 00:02:34,446 - __main__ - INFO - Creating subtask in code mode
+2025-11-14 00:02:34,446 - __main__ - INFO - Subtask edbbaaee-2e16-46f6-8282-7e503ad3c735 created in code mode
+2025-11-14 00:02:36,612 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-11-14 00:03:35,754 - __main__ - INFO - Checkpoint saved to /Users/mbhatt/Roo-Code/roo-code-python/workflow_checkpoint.json

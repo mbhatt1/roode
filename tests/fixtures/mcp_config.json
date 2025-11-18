@@ -1,0 +1,25 @@
+{
+  "mcpServers": {
+    "test-filesystem": {
+      "command": "node",
+      "args": ["test-mcp-server.js"],
+      "env": {
+        "TEST_VAR": "test_value"
+      },
+      "timeout": 30
+    },
+    "test-github": {
+      "command": "python",
+      "args": ["-m", "test_mcp_server"],
+      "env": {
+        "GITHUB_TOKEN": "test_token"
+      },
+      "timeout": 60
+    },
+    "disabled-server": {
+      "command": "echo",
+      "args": ["test"],
+      "disabled": true
+    }
+  }
+}

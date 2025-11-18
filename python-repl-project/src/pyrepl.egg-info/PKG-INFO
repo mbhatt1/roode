@@ -1,0 +1,414 @@
+Metadata-Version: 2.4
+Name: pyrepl
+Version: 0.1.0
+Summary: A modern, feature-rich Python REPL with syntax highlighting and advanced features
+Author-email: Your Name <your.email@example.com>
+License: MIT
+Project-URL: Homepage, https://github.com/yourusername/pyrepl
+Project-URL: Documentation, https://github.com/yourusername/pyrepl#readme
+Project-URL: Repository, https://github.com/yourusername/pyrepl.git
+Project-URL: Issues, https://github.com/yourusername/pyrepl/issues
+Keywords: repl,interactive,python,terminal,shell
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Software Development :: Interpreters
+Classifier: Topic :: Terminals
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Requires-Dist: prompt_toolkit>=3.0.0
+Requires-Dist: pygments>=2.10.0
+Requires-Dist: rich>=13.0.0
+Provides-Extra: dev
+Requires-Dist: pytest>=7.0.0; extra == "dev"
+Requires-Dist: pytest-cov>=4.0.0; extra == "dev"
+Requires-Dist: black>=23.0.0; extra == "dev"
+Requires-Dist: mypy>=1.0.0; extra == "dev"
+Requires-Dist: ruff>=0.1.0; extra == "dev"
+
+# PyREPL - A Modern Python REPL
+
+A feature-rich, modern Python Read-Eval-Print Loop (REPL) with syntax highlighting, auto-completion, and advanced interactive features.
+
+[![Python Version](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
+## ✨ Features
+
+PyREPL provides a powerful, modern Python REPL experience with:
+
+### 🎨 Beautiful Interface
+- **Syntax Highlighting** - Real-time code coloring powered by Pygments
+- **Rich Output** - Enhanced formatting for results, tables, and data structures
+- **Customizable Themes** - Multiple color schemes to match your preferences
+- **Smart Prompts** - Clear primary and continuation prompts
+
+### ⚡ Smart Features
+- **Context-Aware Auto-completion** - Intelligent suggestions as you type
+- **Auto-suggestions from History** - Learn from your previous commands
+- **Multi-line Editing** - Write complex code blocks naturally
+- **Smart Indentation** - Automatic indentation for code blocks
+
+### 💾 Persistent State
+- **Command History** - SQLite-based history across sessions
+- **History Search** - Find previous commands quickly (Ctrl+R)
+- **Session Save/Load** - Save and restore your work
+- **Variable Tracking** - All variables persist throughout your session
+
+### 🔧 Highly Configurable
+- **Configuration Files** - TOML-based configuration
+- **Environment Variables** - Easy customization via env vars
+- **Special Commands** - Built-in commands for common tasks
+- **VI Mode Support** - Optional VI key bindings
+
+### 🚀 Developer Friendly
+- **Exception Formatting** - Clear, helpful error messages
+- **Module Introspection** - Explore imported modules easily
+- **Fast Performance** - Minimal overhead, quick startup
+- **Type Hints** - Full type safety throughout codebase
+
+## 📦 Installation
+
+### Requirements
+- Python 3.9 or higher
+
+### From PyPI (when published)
+
+```bash
+pip install pyrepl
+```
+
+### From Source
+
+```bash
+git clone https://github.com/yourusername/pyrepl.git
+cd pyrepl
+pip install -e .
+```
+
+### Development Installation
+
+For contributors:
+
+```bash
+git clone https://github.com/yourusername/pyrepl.git
+cd pyrepl
+pip install -e ".[dev]"
+```
+
+## 🚀 Quick Start
+
+### Start PyREPL
+
+```bash
+pyrepl
+```
+
+You'll see:
+
+```
+PyREPL v1.0.0
+Python 3.11.0
+
+Type !help for help, !exit to quit.
+Press Ctrl+D or Ctrl+C twice to exit.
+
+>>> 
+```
+
+### Your First Commands
+
+Try some Python code:
+
+```python
+>>> 2 + 2
+4
+
+>>> name = "PyREPL"
+>>> f"Hello, {name}!"
+'Hello, PyREPL!'
+
+>>> def greet(name):
+...     return f"Welcome to {name}!"
+...
+>>> greet("PyREPL")
+'Welcome to PyREPL!'
+```
+
+### Use Special Commands
+
+```python
+>>> x = 42
+>>> y = [1, 2, 3]
+>>> !vars           # List all variables
+>>> !save work.pkl  # Save your session
+>>> !history        # View command history
+>>> !help           # Show all commands
+```
+
+### Tab Completion
+
+Press **Tab** for auto-completion:
+
+```python
+>>> import mat[TAB]
+math  mailbox  marshal  ...
+
+>>> math.p[TAB]
+math.pi  math.pow  math.prod  ...
+```
+
+## 📖 Documentation
+
+- **[USAGE.md](USAGE.md)** - Comprehensive usage guide with examples
+- **[CONTRIBUTING.md](CONTRIBUTING.md)** - Contributing guidelines
+- **[examples/basic_usage.py](examples/basic_usage.py)** - Basic usage examples
+- **[examples/advanced_features.py](examples/advanced_features.py)** - Advanced features demo
+
+## 🎯 Feature Showcase
+
+### Multi-line Editing
+
+```python
+>>> def fibonacci(n):
+...     if n <= 1:
+...         return n
+...     return fibonacci(n-1) + fibonacci(n-2)
+...
+>>> [fibonacci(i) for i in range(10)]
+[0, 1, 1, 2, 3, 5, 8, 13, 21, 34]
+```
+
+### Rich Output Formatting
+
+```python
+>>> data = {
+...     "name": "PyREPL",
+...     "version": "1.0.0",
+...     "features": ["highlighting", "completion", "history"]
+... }
+>>> data
+{
+    'name': 'PyREPL',
+    'version': '1.0.0',
+    'features': [
+        'highlighting',
+        'completion',
+        'history'
+    ]
+}
+```
+
+### Session Management
+
+```python
+# Session 1: Do some work
+>>> data = [1, 2, 3, 4, 5]
+>>> def double(items):
+...     return [x * 2 for x in items]
+...
+>>> !save my_work.pkl
+Session saved to: my_work.pkl
+
+# Session 2: Load it back
+>>> !load my_work.pkl
+Session loaded from: my_work.pkl
+Loaded 2 variable(s)
+>>> double(data)
+[2, 4, 6, 8, 10]
+```
+
+### Variable Inspection
+
+```python
+>>> x = 42
+>>> y = "hello"
+>>> z = [1, 2, 3]
+>>> !vars
+┏━━━━━━━━━━┳━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┓
+┃ Name     ┃ Type        ┃ Value        ┃
+┡━━━━━━━━━━╇━━━━━━━━━━━━━╇━━━━━━━━━━━━━━┩
+│ x        │ int         │ 42           │
+│ y        │ str         │ 'hello'      │
+│ z        │ list        │ [1, 2, 3]    │
+└──────────┴─────────────┴──────────────┘
+```
+
+## ⚙️ Configuration
+
+### Configuration File
+
+Create `~/.pyrepl/config.toml`:
+
+```toml
+[appearance]
+theme = "monokai"
+show_line_numbers = true
+prompt_style = ">>> "
+continuation_prompt = "... "
+enable_syntax_highlighting = true
+
+[behavior]
+auto_indent = true
+confirm_exit = true
+auto_suggest = true
+vi_mode = false
+
+[history]
+history_size = 10000
+save_history = true
+search_history = true
+```
+
+### Environment Variables
+
+Quick configuration via environment:
+
+```bash
+export PYREPL_APPEARANCE__THEME="dracula"
+export PYREPL_HISTORY__HISTORY_SIZE=20000
+export PYREPL_BEHAVIOR__VI_MODE=true
+```
+
+**See [USAGE.md](USAGE.md) for complete configuration reference.**
+
+## 🎮 Special Commands
+
+| Command | Description |
+|---------|-------------|
+| `!help` | Show help information and available commands |
+| `!vars` | List all variables in current session |
+| `!save <file>` | Save session state to file |
+| `!load <file>` | Load session state from file |
+| `!clear` | Clear namespace (reset variables) |
+| `!history` | Show command history |
+| `!exit` / `!quit` | Exit the REPL |
+
+## ⌨️ Keyboard Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| **Tab** | Show completions |
+| **↑** / **↓** | Navigate history |
+| **Ctrl+R** | Search history |
+| **→** / **End** | Accept suggestion |
+| **Ctrl+C** | Clear input (twice to exit) |
+| **Ctrl+D** | Exit REPL |
+
+**See [USAGE.md](USAGE.md) for complete keyboard shortcuts reference.**
+
+## Architecture Overview
+
+### Project Structure
+
+```
+python-repl-project/
+├── src/
+│   └── pyrepl/
+│       ├── __init__.py          # Package initialization and exports
+│       ├── config.py            # Configuration management
+│       ├── main.py              # Entry point and main REPL loop
+│       ├── repl.py              # Core REPL implementation
+│       ├── completer.py         # Auto-completion logic
+│       ├── highlighter.py       # Syntax highlighting
+│       ├── history.py           # Command history management
+│       └── formatter.py         # Output formatting
+├── tests/                       # Test suite
+├── pyproject.toml              # Project metadata and dependencies
+└── README.md                   # This file
+```
+
+### Core Components
+
+#### 1. **REPL Engine** (`repl.py`)
+The heart of the application that manages the read-eval-print loop, handles user input, executes Python code, and displays results.
+
+#### 2. **Configuration Manager** (`config.py`)
+Handles loading and merging configuration from multiple sources (files, environment variables, CLI arguments).
+
+#### 3. **Syntax Highlighter** (`highlighter.py`)
+Uses Pygments to provide real-time syntax highlighting for Python code as you type.
+
+#### 4. **Auto-completer** (`completer.py`)
+Provides intelligent auto-completion suggestions based on the current context, available variables, and imported modules.
+
+#### 5. **History Manager** (`history.py`)
+Maintains a persistent history of commands across sessions, with search and navigation capabilities.
+
+#### 6. **Output Formatter** (`formatter.py`)
+Uses Rich to format output in a readable and visually appealing way, with support for tables, syntax highlighting, and more.
+
+### Design Principles
+
+- **Modularity**: Each component is self-contained and testable
+- **Extensibility**: Easy to add new features and plugins
+- **Performance**: Minimal overhead, fast startup time
+- **User Experience**: Intuitive interface with sensible defaults
+- **Type Safety**: Comprehensive type hints throughout the codebase
+
+## Development
+
+### Running Tests
+
+```bash
+pytest
+```
+
+### Code Formatting
+
+```bash
+black src/ tests/
+```
+
+### Type Checking
+
+```bash
+mypy src/
+```
+
+### Linting
+
+```bash
+ruff check src/ tests/
+```
+
+## Roadmap
+
+- [ ] Plugin system for extensibility
+- [ ] IPython magic commands compatibility
+- [ ] Debugging capabilities
+- [ ] Code execution time tracking
+- [ ] Export session to script file
+- [ ] Integration with Jupyter kernels
+- [ ] Web-based interface option
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgments
+
+- [prompt_toolkit](https://github.com/prompt-toolkit/python-prompt-toolkit) - For the interactive prompt infrastructure
+- [Pygments](https://pygments.org/) - For syntax highlighting
+- [Rich](https://github.com/Textualize/rich) - For beautiful terminal output
+
+## Support
+
+If you encounter any issues or have questions, please file an issue on the [GitHub issue tracker](https://github.com/yourusername/pyrepl/issues).

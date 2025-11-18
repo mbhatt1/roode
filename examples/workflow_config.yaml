@@ -1,0 +1,490 @@
+# MCP Modes Server Recreation Workflow Configuration
+#
+# This YAML file demonstrates how to externalize workflow definitions
+# for the orchestrator mode demonstration runner.
+#
+# Structure:
+#   - phases: List of workflow phases
+#     - id: Unique phase identifier
+#     - name: Human-readable phase name
+#     - description: Brief phase description
+#     - subtasks: List of subtasks within the phase
+#       - mode: Which mode to use (ask, architect, code, debug, orchestrator)
+#       - description: Brief subtask description
+#       - message: Detailed instructions for the subtask
+#       - expected_outputs: List of files/artifacts to create
+#       - dependencies: List of required prior outputs
+
+version: "1.0"
+project: "MCP Modes Server"
+
+# Workflow metadata
+metadata:
+  name: "MCP Modes Server Recreation"
+  description: "Coordinated workflow to recreate the MCP Modes Server implementation"
+  author: "Roo Code Team"
+  created: "2024-01-01"
+
+# Global settings
+settings:
+  # Default mode if not specified
+  default_mode: "code"
+  
+  # Checkpoint settings
+  checkpoint:
+    enabled: true
+    file: "workflow_checkpoint.json"
+    save_after_each_subtask: true
+  
+  # Logging settings
+  logging:
+    level: "INFO"
+    file: "workflow_run.log"
+    console: true
+
+# Workflow phases
+phases:
+  # Phase 1: System Analysis
+  - id: 1
+    name: "System Analysis"
+    description: "Analyze existing mode system and understand requirements"
+    subtasks:
+      - mode: "ask"
+        description: "Analyze mode system architecture"
+        message: |
+          Analyze the existing mode system to understand:
+          1. How modes are configured and loaded
+          2. The Task and ModeOrchestrator classes
+          3. Tool restrictions and file permissions
+          4. Parent-child task relationships
+          
+          Focus on understanding the architecture before we design the MCP server.
+          
+          Read these key files:
+          - roo_code/modes/config.py
+          - roo_code/modes/orchestrator.py
+          - roo_code/modes/task.py
+          - roo_code/modes/builtin_modes.py
+        expected_outputs:
+          - "System architecture understanding"
+        dependencies: []
+
+  # Phase 2: Requirements Research
+  - id: 2
+    name: "MCP Protocol Research"
+    description: "Research MCP protocol requirements and specifications"
+    subtasks:
+      - mode: "ask"
+        description: "Research MCP protocol and server patterns"
+        message: |
+          Research the Model Context Protocol (MCP) to understand:
+          1. Protocol specification and message format
+          2. Server initialization and lifecycle
+          3. Resource and tool exposure patterns
+          4. Session management requirements
+          5. Error handling and validation
+          
+          Provide a comprehensive summary that will guide the architecture design.
+        expected_outputs:
+          - "MCP protocol requirements document"
+        dependencies: []
+
+  # Phase 3: Architecture Design
+  - id: 3
+    name: "Architecture Design"
+    description: "Design the MCP Modes Server architecture"
+    subtasks:
+      - mode: "architect"
+        description: "Design system architecture"
+        message: |
+          Design a comprehensive architecture for the MCP Modes Server that:
+          
+          1. Exposes the mode system via MCP protocol
+          2. Manages mode sessions and task lifecycle
+          3. Provides resources (mode configs, task state)
+          4. Provides tools (switch_mode, new_task, get_task_status)
+          5. Handles validation and error recovery
+          
+          Create a detailed architecture document (ARCHITECTURE_MCP_MODES_SERVER.md) covering:
+          - System components and their responsibilities
+          - Data flow and interaction patterns
+          - Configuration and deployment
+          - Error handling strategies
+          - Testing approach
+          
+          Consider:
+          - The existing mode system (ModeOrchestrator, Task, ModeConfig)
+          - MCP protocol requirements (init, resources, tools)
+          - Session management and isolation
+          - Async/await patterns throughout
+        expected_outputs:
+          - "ARCHITECTURE_MCP_MODES_SERVER.md"
+        dependencies:
+          - "System architecture understanding"
+          - "MCP protocol requirements document"
+
+  # Phase 4: Core Infrastructure
+  - id: 4
+    name: "Core Infrastructure Implementation"
+    description: "Implement protocol, config, and validation infrastructure"
+    subtasks:
+      - mode: "code"
+        description: "Implement MCP protocol types and messages"
+        message: |
+          Create roo_code/mcp/protocol.py implementing:
+          
+          1. Core MCP message types (Request, Response, Notification)
+          2. Protocol-specific types (InitializeRequest, InitializeResult, etc.)
+          3. Resource and Tool schemas
+          4. Proper JSON serialization support
+          
+          Use dataclasses with proper type hints. Follow the MCP specification.
+          Make sure all types are properly validated and serializable.
+        expected_outputs:
+          - "roo_code/mcp/protocol.py"
+        dependencies:
+          - "ARCHITECTURE_MCP_MODES_SERVER.md"
+
+      - mode: "code"
+        description: "Implement configuration management"
+        message: |
+          Create roo_code/mcp/config.py implementing:
+          
+          1. MCPServerConfig dataclass for server configuration
+          2. Default configuration values
+          3. Configuration loading from environment/files
+          4. Configuration validation
+          
+          Support configuration of:
+          - Server name and version
+          - Enabled resources and tools
+          - Session timeout settings
+          - Logging configuration
+        expected_outputs:
+          - "roo_code/mcp/config.py"
+        dependencies:
+          - "roo_code/mcp/protocol.py"
+
+      - mode: "code"
+        description: "Implement validation utilities"
+        message: |
+          Create roo_code/mcp/validation.py implementing:
+          
+          1. Message validation (schema compliance)
+          2. Request parameter validation
+          3. Tool argument validation
+          4. Resource URI validation
+          5. Custom validation exceptions
+          
+          Use pydantic or similar for robust validation.
+          Provide clear error messages for validation failures.
+        expected_outputs:
+          - "roo_code/mcp/validation.py"
+        dependencies:
+          - "roo_code/mcp/protocol.py"
+
+  # Phase 5: Session Management
+  - id: 5
+    name: "Session Management"
+    description: "Implement session and state management"
+    subtasks:
+      - mode: "code"
+        description: "Implement session manager"
+        message: |
+          Create roo_code/mcp/session.py implementing:
+          
+          1. MCPSession class managing a client session
+             - Session ID and client info
+             - Associated ModeOrchestrator
+             - Active tasks dictionary
+             - Session state (initialized, active, closed)
+          
+          2. Session lifecycle methods:
+             - initialize() - Setup session
+             - create_task() - Create mode task
+             - get_task() - Retrieve task by ID
+             - close() - Cleanup session
+          
+          3. SessionManager class for multi-session management
+             - Session creation and tracking
+             - Session cleanup and timeout
+             - Thread-safe session access
+          
+          Use proper async patterns and include comprehensive docstrings.
+        expected_outputs:
+          - "roo_code/mcp/session.py"
+        dependencies:
+          - "roo_code/mcp/config.py"
+
+  # Phase 6: Resources and Tools
+  - id: 6
+    name: "Resources and Tools Handlers"
+    description: "Implement MCP resources and tools"
+    subtasks:
+      - mode: "code"
+        description: "Implement resource handlers"
+        message: |
+          Create roo_code/mcp/resources.py implementing:
+          
+          1. Available resources:
+             - mode://list - List all available modes
+             - mode://{slug} - Get mode configuration
+             - task://{session_id}/{task_id} - Get task state
+             - session://{session_id} - Get session info
+          
+          2. MCPResourceHandler class with:
+             - list_resources() - Return available resources
+             - read_resource(uri) - Read resource content
+             - URI parsing and validation
+          
+          Include proper error handling for invalid URIs.
+        expected_outputs:
+          - "roo_code/mcp/resources.py"
+        dependencies:
+          - "roo_code/mcp/session.py"
+
+      - mode: "code"
+        description: "Implement tool handlers"
+        message: |
+          Create roo_code/mcp/tools.py implementing:
+          
+          1. Available tools:
+             - switch_mode - Switch task to different mode
+             - new_task - Create new task in specified mode
+             - get_task_status - Get current task state
+             - list_modes - List available modes
+          
+          2. MCPToolHandler class with:
+             - list_tools() - Return available tools with schemas
+             - call_tool(name, arguments) - Execute tool
+             - Tool argument validation
+          
+          Each tool should:
+          - Validate inputs thoroughly
+          - Return structured results
+          - Handle errors gracefully
+        expected_outputs:
+          - "roo_code/mcp/tools.py"
+        dependencies:
+          - "roo_code/mcp/session.py"
+
+  # Phase 7: Server Implementation
+  - id: 7
+    name: "Server Core"
+    description: "Implement the main MCP server and CLI"
+    subtasks:
+      - mode: "code"
+        description: "Implement MCP server"
+        message: |
+          Create roo_code/mcp/server.py implementing:
+          
+          1. MCPModesServer class:
+             - Server initialization and configuration
+             - Session management integration
+             - Request routing (resources, tools)
+             - Protocol message handling
+             - Async message processing
+          
+          2. Server lifecycle:
+             - start() - Start server
+             - stop() - Graceful shutdown
+             - handle_request() - Process MCP requests
+          
+          3. Message handlers:
+             - handle_initialize()
+             - handle_list_resources()
+             - handle_read_resource()
+             - handle_list_tools()
+             - handle_call_tool()
+          
+          Use asyncio for all I/O operations.
+        expected_outputs:
+          - "roo_code/mcp/server.py"
+        dependencies:
+          - "roo_code/mcp/resources.py"
+          - "roo_code/mcp/tools.py"
+
+      - mode: "code"
+        description: "Implement CLI interface"
+        message: |
+          Create roo_code/mcp/__main__.py implementing:
+          
+          1. CLI argument parsing:
+             - --config - Configuration file
+             - --log-level - Logging level
+             - --project-root - Project root directory
+          
+          2. Server startup:
+             - Load configuration
+             - Initialize server
+             - Setup signal handlers
+             - Start event loop
+          
+          3. Graceful shutdown on SIGINT/SIGTERM
+          
+          Make the server runnable via:
+          - python -m roo_code.mcp
+          - Direct stdio MCP protocol communication
+        expected_outputs:
+          - "roo_code/mcp/__main__.py"
+        dependencies:
+          - "roo_code/mcp/server.py"
+
+      - mode: "code"
+        description: "Create module initialization"
+        message: |
+          Create roo_code/mcp/__init__.py with:
+          
+          1. Package exports:
+             - MCPModesServer
+             - MCPSession
+             - SessionManager
+             - Core protocol types
+          
+          2. Package metadata:
+             - __version__
+             - __all__ list
+          
+          3. Convenience imports for common use cases
+        expected_outputs:
+          - "roo_code/mcp/__init__.py"
+        dependencies:
+          - "roo_code/mcp/server.py"
+
+  # Phase 8: Testing
+  - id: 8
+    name: "Comprehensive Testing"
+    description: "Create test suites for all components"
+    subtasks:
+      - mode: "code"
+        description: "Create protocol tests"
+        message: |
+          Create tests/test_mcp_protocol.py testing:
+          
+          1. Message serialization/deserialization
+          2. Protocol type validation
+          3. Request/Response pairing
+          4. Error handling
+          
+          Use pytest with fixtures for common test data.
+        expected_outputs:
+          - "tests/test_mcp_protocol.py"
+        dependencies:
+          - "roo_code/mcp/protocol.py"
+
+      - mode: "code"
+        description: "Create session tests"
+        message: |
+          Create tests/test_mcp_session.py testing:
+          
+          1. Session creation and initialization
+          2. Task management within sessions
+          3. Session lifecycle (create, use, close)
+          4. Multi-session management
+          5. Session timeout and cleanup
+          
+          Use async test patterns (pytest-asyncio).
+        expected_outputs:
+          - "tests/test_mcp_session.py"
+        dependencies:
+          - "roo_code/mcp/session.py"
+
+      - mode: "code"
+        description: "Create integration tests"
+        message: |
+          Create tests/test_mcp_integration.py testing:
+          
+          1. Complete MCP workflows:
+             - Initialize server
+             - Create session
+             - Switch modes
+             - Create subtasks
+             - Query task status
+          
+          2. Multi-session scenarios
+          3. Resource and tool combinations
+          4. Error recovery scenarios
+          
+          These should test the full stack.
+        expected_outputs:
+          - "tests/test_mcp_integration.py"
+        dependencies:
+          - "roo_code/mcp/server.py"
+
+  # Phase 9: Documentation
+  - id: 9
+    name: "Documentation"
+    description: "Create comprehensive documentation"
+    subtasks:
+      - mode: "architect"
+        description: "Create API documentation"
+        message: |
+          Create docs/MCP_MODES_SERVER_API.md documenting:
+          
+          1. API Overview:
+             - Protocol version
+             - Server capabilities
+             - Authentication (if any)
+          
+          2. Resources:
+             - List all available resources
+             - URI patterns
+             - Response schemas
+             - Examples
+          
+          3. Tools:
+             - List all available tools
+             - Parameter schemas
+             - Return value schemas
+             - Usage examples
+          
+          4. Error Codes and Messages
+          
+          Use clear markdown with code examples.
+        expected_outputs:
+          - "docs/MCP_MODES_SERVER_API.md"
+        dependencies:
+          - "roo_code/mcp/server.py"
+
+      - mode: "architect"
+        description: "Create user guide"
+        message: |
+          Create docs/MCP_MODES_SERVER_USER_GUIDE.md with:
+          
+          1. Getting Started:
+             - Installation
+             - Configuration
+             - Running the server
+          
+          2. Basic Usage:
+             - Connecting clients
+             - Creating sessions
+             - Using modes
+          
+          3. Advanced Topics:
+             - Custom mode integration
+             - Multi-session management
+             - Performance tuning
+          
+          4. Troubleshooting:
+             - Common issues
+             - Debugging tips
+             - Log analysis
+          
+          Include practical examples throughout.
+        expected_outputs:
+          - "docs/MCP_MODES_SERVER_USER_GUIDE.md"
+        dependencies:
+          - "docs/MCP_MODES_SERVER_API.md"
+
+# Example of how to add custom phases
+# custom_phases:
+#   - id: 10
+#     name: "Custom Integration"
+#     description: "Add custom integrations"
+#     subtasks:
+#       - mode: "code"
+#         description: "Implement custom feature"
+#         message: "Detailed instructions..."
+#         expected_outputs: ["custom_file.py"]
+#         dependencies: ["previous_output"]

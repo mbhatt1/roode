@@ -1,0 +1,292 @@
+Metadata-Version: 2.4
+Name: roo-code
+Version: 0.1.0
+Summary: Python SDK for Roo Code - AI-Powered Development Tools
+Author-email: Roo Code Team <support@roocode.com>
+License: Apache-2.0
+Project-URL: Homepage, https://github.com/RooCodeInc/Roo-Code
+Project-URL: Documentation, https://docs.roocode.com
+Project-URL: Repository, https://github.com/RooCodeInc/Roo-Code
+Project-URL: Issues, https://github.com/RooCodeInc/Roo-Code/issues
+Keywords: ai,code,assistant,development,llm
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+Requires-Dist: anthropic>=0.34.0
+Requires-Dist: openai>=1.0.0
+Requires-Dist: pydantic>=2.0.0
+Requires-Dist: httpx>=0.27.0
+Requires-Dist: typing-extensions>=4.5.0
+Requires-Dist: tree-sitter>=0.21.0
+Provides-Extra: dev
+Requires-Dist: pytest>=7.4.0; extra == "dev"
+Requires-Dist: pytest-asyncio>=0.21.0; extra == "dev"
+Requires-Dist: pytest-cov>=4.1.0; extra == "dev"
+Requires-Dist: black>=23.0.0; extra == "dev"
+Requires-Dist: ruff>=0.1.0; extra == "dev"
+Requires-Dist: mypy>=1.5.0; extra == "dev"
+Provides-Extra: tools
+Requires-Dist: playwright>=1.40.0; extra == "tools"
+Provides-Extra: treesitter
+Requires-Dist: tree-sitter-python>=0.21.0; extra == "treesitter"
+Requires-Dist: tree-sitter-javascript>=0.21.0; extra == "treesitter"
+Requires-Dist: tree-sitter-typescript>=0.21.0; extra == "treesitter"
+Requires-Dist: tree-sitter-java>=0.21.0; extra == "treesitter"
+Requires-Dist: tree-sitter-cpp>=0.22.0; extra == "treesitter"
+Requires-Dist: tree-sitter-c>=0.21.0; extra == "treesitter"
+Requires-Dist: tree-sitter-go>=0.21.0; extra == "treesitter"
+Requires-Dist: tree-sitter-rust>=0.21.0; extra == "treesitter"
+Requires-Dist: tree-sitter-ruby>=0.21.0; extra == "treesitter"
+Requires-Dist: tree-sitter-php>=0.22.0; extra == "treesitter"
+Provides-Extra: vector
+Requires-Dist: chromadb>=0.4.0; extra == "vector"
+Provides-Extra: all
+Requires-Dist: roo-code[dev,tools,treesitter,vector]; extra == "all"
+
+# Roo Code Python SDK
+
+[![PyPI version](https://badge.fury.io/py/roo-code.svg)](https://badge.fury.io/py/roo-code)
+[![Python Support](https://img.shields.io/pypi/pyversions/roo-code.svg)](https://pypi.org/project/roo-code/)
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+
+Python SDK for [Roo Code](https://roocode.com) - Your AI-Powered Dev Team, Right in Your Editor.
+
+## Features
+
+- 🤖 **Multiple AI Provider Support**: Anthropic, OpenAI, Google Gemini, OpenRouter, and more
+- 🎯 **Streaming Responses**: Efficient streaming API for real-time responses
+- 🔧 **Type Safety**: Full type hints and Pydantic models for robust code
+- 🌐 **Async Support**: Built with async/await for modern Python applications
+- 📊 **Token Counting**: Built-in token counting for cost management
+- 🛠️ **Extensible**: Easy to extend with custom providers
+- 🎭 **Mode/Persona System**: Context-aware AI with specialized modes for different tasks
+- 🔒 **Tool Restrictions**: Enforce mode-based access control for safety
+- 🪃 **Task Orchestration**: Break down complex tasks with the Orchestrator mode
+
+## Installation
+
+```bash
+pip install roo-code
+```
+
+For development:
+
+```bash
+pip install roo-code[dev]
+```
+
+## Quick Start
+
+```python
+from roo_code import RooClient, ProviderSettings
+import asyncio
+
+async def main():
+    # Initialize client with Anthropic
+    client = RooClient(
+        provider_settings=ProviderSettings(
+            api_provider="anthropic",
+            api_key="your-api-key",
+            api_model_id="claude-sonnet-4-5"
+        )
+    )
+    
+    # Create a message
+    response = await client.create_message(
+        system_prompt="You are a helpful coding assistant.",
+        messages=[
+            {
+                "role": "user",
+                "content": "Write a Python function to calculate fibonacci numbers"
+            }
+        ]
+    )
+    
+    # Stream the response
+    async for chunk in response.stream():
+        if chunk.type == "content_block_delta":
+            print(chunk.delta.text, end="", flush=True)
+
+asyncio.run(main())
+```
+
+## Mode/Persona System
+
+The SDK includes a powerful mode system that provides specialized AI personas for different types of tasks:
+
+```python
+from roo_code.modes import ModeAgent
+
+# Create a mode-aware agent
+agent = ModeAgent(
+    client=client,
+    mode_slug="code",  # Start in code mode
+    project_root=Path.cwd()
+)
+
+# Run a coding task
+result = await agent.run("Create a REST API")
+
+# Switch to architect mode for planning
+agent.switch_mode("architect", reason="Need to plan the architecture")
+plan = await agent.run("Design the database schema")
+```
+
+### Built-in Modes
+
+- **💻 Code Mode** (`code`): Full access to read, edit, command, and browser tools
+- **🏗️ Architect Mode** (`architect`): Planning and design (markdown editing only)
+- **❓ Ask Mode** (`ask`): Read-only analysis and Q&A
+- **🪲 Debug Mode** (`debug`): Systematic troubleshooting and diagnostics
+- **🪃 Orchestrator Mode** (`orchestrator`): Task delegation and workflow coordination
+
+### Custom Modes
+
+Create custom modes with YAML configuration:
+
+```yaml
+# .roomodes or ~/.roo-code/modes.yaml
+customModes:
+  - slug: reviewer
+    name: 🔍 Code Reviewer
+    roleDefinition: You are an expert code reviewer
+    groups:
+      - read
+      - browser
+    whenToUse: When you need to review code for quality
+```
+
+📚 [Full Mode System Documentation](docs/modes.md)
+
+## Supported Providers
+
+- Anthropic (Claude)
+- OpenAI (GPT-4, GPT-3.5)
+- Google Gemini
+- OpenRouter
+- AWS Bedrock
+- Google Vertex AI
+- Mistral AI
+- DeepSeek
+- Groq
+- And many more...
+
+## Advanced Usage
+
+### Using Different Providers
+
+```python
+from roo_code import RooClient, ProviderSettings
+
+# OpenAI
+client = RooClient(
+    provider_settings=ProviderSettings(
+        api_provider="openai",
+        api_key="your-openai-key",
+        api_model_id="gpt-4"
+    )
+)
+
+# Google Gemini
+client = RooClient(
+    provider_settings=ProviderSettings(
+        api_provider="gemini",
+        api_key="your-gemini-key",
+        api_model_id="gemini-pro"
+    )
+)
+```
+
+### Token Counting
+
+```python
+# Count tokens for cost estimation
+token_count = await client.count_tokens([
+    {"type": "text", "text": "Your content here"}
+])
+print(f"Token count: {token_count}")
+```
+
+### Custom Configuration
+
+```python
+from roo_code import RooClient, ProviderSettings
+
+client = RooClient(
+    provider_settings=ProviderSettings(
+        api_provider="anthropic",
+        api_key="your-api-key",
+        api_model_id="claude-sonnet-4-5"
+    ),
+    base_url="https://custom-api-endpoint.com",  # Optional custom endpoint
+    timeout=60.0  # Custom timeout in seconds
+)
+```
+
+## Development
+
+### Setup
+
+```bash
+# Clone the repository
+git clone https://github.com/RooCodeInc/Roo-Code.git
+cd roo-code-python
+
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install dependencies
+pip install -e ".[dev]"
+```
+
+### Running Tests
+
+```bash
+pytest
+```
+
+### Code Formatting
+
+```bash
+black roo_code tests
+ruff check roo_code tests
+```
+
+### Type Checking
+
+```bash
+mypy roo_code
+```
+
+## Documentation
+
+For full documentation, visit [docs.roocode.com](https://docs.roocode.com)
+
+## Contributing
+
+Contributions are welcome! Please read our [Contributing Guide](https://github.com/RooCodeInc/Roo-Code/blob/main/CONTRIBUTING.md) for details.
+
+## License
+
+Apache License 2.0 - see [LICENSE](LICENSE) file for details.
+
+## Support
+
+- 📖 [Documentation](https://docs.roocode.com)
+- 💬 [Discord Community](https://discord.gg/roocode)
+- 🐛 [Issue Tracker](https://github.com/RooCodeInc/Roo-Code/issues)
+- 📧 Email: support@roocode.com
+
+## Related Projects
+
+- [Roo Code VSCode Extension](https://marketplace.visualstudio.com/items?itemName=RooVeterinaryInc.roo-cline)
+- [Roo Code TypeScript SDK](https://github.com/RooCodeInc/Roo-Code)

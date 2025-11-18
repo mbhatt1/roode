@@ -1,0 +1,496 @@
+# Roode: Roo Code Python SDK
+
+> Python SDK for AI-Powered Development Tools
+
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+[![Python Version](https://img.shields.io/badge/python-3.9%2B-blue)](https://www.python.org/downloads/)
+[![Development Status](https://img.shields.io/badge/status-alpha-orange)](https://github.com/RooCodeInc/Roo-Code)
+
+Roode is a powerful Python framework for building AI agents that can interact with codebases, execute commands, browse the web, and integrate with external tools through the Model Context Protocol (MCP).
+
+## 🚀 Key Features
+
+### Multi-Mode AI Agents
+- **5 Built-in Modes**: Code, Debug, Architect, Ask, and Orchestrator
+- **Role-Based Behavior**: Each mode has specialized capabilities and tool access
+- **Intelligent Delegation**: Orchestrator mode coordinates complex multi-step workflows
+- **Custom Modes**: Define your own modes with YAML configuration
+
+### Comprehensive Tool System
+- **17+ Built-in Tools** organized into 7 categories
+- **File Operations**: Read, write, edit with precision diffs
+- **Code Intelligence**: Search, parse definitions, tree-sitter integration
+- **Command Execution**: Run shell commands with real-time output
+- **Browser Automation**: Playwright-powered web interaction
+- **Workflow Management**: Follow-up questions, task completion, todo tracking
+
+### MCP Integration
+- **Extensible Architecture**: Connect to MCP servers for additional capabilities
+- **Tool Discovery**: Automatically discover and use MCP-provided tools
+- **Resource Access**: Query MCP resources for external data sources
+
+### Multi-Provider Support
+Support for 15+ AI providers including:
+- Anthropic (Claude)
+- OpenAI (GPT-4, GPT-3.5)
+- Google (Gemini)
+- And many more...
+
+### Robust Error Handling
+- **Circuit Breakers**: Automatic failure detection and recovery
+- **Retry Logic**: Exponential backoff for transient failures
+- **Error Metrics**: Track and analyze error patterns
+- **Graceful Degradation**: Continue operation when services fail
+
+## 📦 Installation
+
+### Basic Installation
+
+```bash
+pip install roo-code
+```
+
+### Installation with Optional Dependencies
+
+```bash
+# Install with browser automation support
+pip install roo-code[tools]
+
+# Install with tree-sitter language parsers
+pip install roo-code[treesitter]
+
+# Install with vector database support
+pip install roo-code[vector]
+
+# Install everything (including dev tools)
+pip install roo-code[all]
+```
+
+### Requirements
+
+- Python 3.9 or higher
+- API key for your chosen AI provider
+
+## ⚡ Quick Start
+
+### Basic Usage
+
+```python
+import asyncio
+from roo_code import RooClient, ProviderSettings
+
+async def main():
+    # Initialize client with your preferred provider
+    client = RooClient(
+        provider_settings=ProviderSettings(
+            api_provider="anthropic",
+            api_key="your-api-key-here",
+            api_model_id="claude-sonnet-4-5"
+        )
+    )
+    
+    # Create a simple message
+    response = await client.create_message(
+        system_prompt="You are a helpful coding assistant.",
+        messages=[
+            {"role": "user", "content": "Write a Python function to calculate fibonacci numbers"}
+        ]
+    )
+    
+    # Stream the response
+    async for chunk in response.stream():
+        if chunk.type == "content_block_delta":
+            print(chunk.delta.text, end="", flush=True)
+
+if __name__ == "__main__":
+    asyncio.run(main())
+```
+
+### Using Mode-Based Agents
+
+```python
+from roo_code import RooClient, ProviderSettings
+from roo_code.modes import ModeAgent
+from pathlib import Path
+
+async def main():
+    # Initialize client
+    client = RooClient(
+        provider_settings=ProviderSettings(
+            api_provider="anthropic",
+            api_key="your-api-key",
+            api_model_id="claude-sonnet-4-5"
+        )
+    )
+    
+    # Create mode-aware agent
+    agent = ModeAgent(
+        client=client,
+        mode_slug="code",  # Start in code mode
+        project_root=Path.cwd()
+    )
+    
+    # Run task with full tool access
+    result = await agent.run("Create a REST API using FastAPI")
+    print(result)
+```
+
+## 🏗️ Architecture
+
+Roode is built on a modular architecture with clear separation of concerns:
+
+```
+┌─────────────────────────────────────────────┐
+│           Application Layer                  │
+│         (Your Code / CLI / API)             │
+└──────────────────┬──────────────────────────┘
+                   │
+┌──────────────────▼──────────────────────────┐
+│          Agent Layer (agent.py)             │
+│  • Conversation orchestration                │
+│  • Tool execution coordination              │
+│  • Mode management                          │
+└──────────────────┬──────────────────────────┘
+                   │
+         ┌─────────┴──────────┐
+         │                    │
+┌────────▼────────┐  ┌───────▼─────────┐
+│  Tool Layer     │  │  Client Layer   │
+│  (tools.py)     │  │  (client.py)    │
+│  • Registry     │  │  • Multi-provider│
+│  • Execution    │  │  • Streaming    │
+│  • Validation   │  │  • Token count  │
+└────────┬────────┘  └─────────────────┘
+         │
+┌────────▼────────────────────────────────────┐
+│         Built-in Tools (builtin_tools/)     │
+│  • File operations  • Search & discovery    │
+│  • Command exec     • Browser automation    │
+│  • MCP integration  • Workflow management   │
+└─────────────────────────────────────────────┘
+```
+
+### Core Components
+
+- **[`agent.py`](roo_code/agent.py)** - Core agent orchestration and conversation management
+- **[`client.py`](roo_code/client.py)** - Multi-provider client abstraction
+- **[`tools.py`](roo_code/tools.py)** - Tool execution framework and registry
+- **[`modes/`](roo_code/modes/)** - Mode system implementation
+- **[`builtin_tools/`](roo_code/builtin_tools/)** - Built-in tool implementations
+- **[`mcp/`](roo_code/mcp/)** - Model Context Protocol integration
+
+## 🎭 Modes
+
+Modes define different operational contexts that change how the AI agent behaves and which tools it can access.
+
+### Built-in Modes
+
+| Mode | Slug | When to Use | Tool Access |
+|------|------|-------------|-------------|
+| 💻 **Code** | `code` | Writing, modifying, or refactoring code | Full access (all tool groups) |
+| 🪲 **Debug** | `debug` | Troubleshooting issues, investigating errors | Read, edit, browser, command, MCP |
+| 🏗️ **Architect** | `architect` | Planning and designing before implementation | Read, browser, MCP, edit (markdown only) |
+| ❓ **Ask** | `ask` | Getting explanations, documentation, answers | Read, browser, MCP (read-only) |
+| 🪃 **Orchestrator** | `orchestrator` | Complex multi-step projects requiring coordination | Delegation only (no direct tools) |
+
+### Using Modes
+
+```python
+# Create agent in specific mode
+agent = ModeAgent(client=client, mode_slug="architect")
+result = await agent.run("Design a microservices architecture")
+
+# Switch modes programmatically
+agent.switch_mode("code", reason="Ready to implement the design")
+
+# Orchestrator delegates to specialized modes
+orchestrator = ModeAgent(client=client, mode_slug="orchestrator")
+await orchestrator.run(
+    "Build a web scraper: plan architecture, implement code, then debug"
+)
+```
+
+### Custom Modes
+
+Create custom modes with YAML configuration:
+
+```yaml
+# ~/.roo-code/modes.yaml
+customModes:
+  - slug: reviewer
+    name: 🔍 Code Reviewer
+    roleDefinition: |
+      You are an expert code reviewer focused on quality and best practices.
+    groups:
+      - read
+      - browser
+    whenToUse: When you need to review code for quality
+```
+
+See [`docs/modes.md`](docs/modes.md) for detailed mode documentation.
+
+## 🛠️ Tools
+
+Tools are organized into 7 functional groups:
+
+### Read Tools
+File reading and code discovery
+- **read_file** - Read file contents with line numbers
+- **search_files** - Regex search across files with context
+- **list_files** - List directory contents
+- **list_code_definition_names** - Extract code structure definitions
+- **fetch_instructions** - Retrieve task-specific instructions
+
+### Edit Tools
+File creation and modification
+- **write_to_file** - Create new files or complete rewrites
+- **apply_diff** - Precise surgical edits with search/replace
+- **insert_content** - Add lines at specific positions
+
+### Command Tools
+Shell command execution
+- **execute_command** - Run CLI commands with streaming output
+
+### Browser Tools
+Web automation and interaction
+- **browser_action** - Puppeteer-powered browser control
+
+### MCP Tools
+Model Context Protocol integration
+- **use_mcp_tool** - Execute tools from MCP servers
+- **access_mcp_resource** - Query MCP resources
+
+### Workflow Tools
+Task management and user interaction
+- **ask_followup_question** - Request clarification from user
+- **attempt_completion** - Signal task completion
+- **update_todo_list** - Manage task checklists
+
+### Advanced Tools
+Specialized capabilities
+- **codebase_search** - Semantic code search with embeddings
+- **run_slash_command** - Execute built-in slash commands
+- **generate_image** - AI image generation
+
+## 🔌 MCP Integration
+
+The Model Context Protocol (MCP) enables communication with external servers that provide additional tools and resources.
+
+### Connecting to MCP Servers
+
+```python
+from roo_code.mcp import MCPServerManager
+
+# Initialize MCP manager
+mcp_manager = MCPServerManager()
+
+# Connect to a server
+await mcp_manager.connect_server(
+    name="weather-server",
+    command="npx",
+    args=["-y", "@modelcontextprotocol/server-weather"]
+)
+
+# List available tools
+tools = await mcp_manager.list_tools("weather-server")
+print(f"Available tools: {tools}")
+
+# Use an MCP tool
+result = await mcp_manager.call_tool(
+    server_name="weather-server",
+    tool_name="get_forecast",
+    arguments={"city": "San Francisco", "days": 5}
+)
+```
+
+### Available MCP Servers
+
+The ecosystem includes servers for:
+- File system operations
+- Database queries
+- API integrations (GitHub, Slack, etc.)
+- Search engines
+- Development tools
+- And more...
+
+See the [MCP server documentation](https://modelcontextprotocol.io/servers) for available servers.
+
+## ⚙️ Configuration
+
+### Provider Configuration
+
+Configure your AI provider in code or via environment variables:
+
+```python
+from roo_code import ProviderSettings
+
+# Anthropic (Claude)
+settings = ProviderSettings(
+    api_provider="anthropic",
+    api_key="sk-ant-...",
+    api_model_id="claude-sonnet-4-5"
+)
+
+# OpenAI
+settings = ProviderSettings(
+    api_provider="openai",
+    api_key="sk-...",
+    api_model_id="gpt-4"
+)
+
+# Google Gemini
+settings = ProviderSettings(
+    api_provider="gemini",
+    api_key="...",
+    api_model_id="gemini-1.5-pro"
+)
+```
+
+### Environment Variables
+
+```bash
+export ANTHROPIC_API_KEY="your-key-here"
+export OPENAI_API_KEY="your-key-here"
+export GOOGLE_API_KEY="your-key-here"
+```
+
+### Global Configuration
+
+Create `~/.roo-code/config.yaml`:
+
+```yaml
+# Default provider settings
+provider:
+  api_provider: anthropic
+  api_model_id: claude-sonnet-4-5
+
+# Tool configuration
+tools:
+  browser:
+    headless: true
+    timeout: 30000
+  
+# MCP servers
+mcp_servers:
+  - name: filesystem
+    command: npx
+    args: ["-y", "@modelcontextprotocol/server-filesystem"]
+```
+
+## 🧪 Development
+
+### Setup Development Environment
+
+```bash
+# Clone repository
+git clone https://github.com/RooCodeInc/Roo-Code.git
+cd roo-code-python
+
+# Install with development dependencies
+pip install -e ".[dev]"
+```
+
+### Running Tests
+
+```bash
+# Run all tests
+pytest
+
+# Run with coverage
+pytest --cov=roo_code --cov-report=html
+
+# Run specific test file
+pytest tests/test_agent.py
+```
+
+### Code Quality
+
+```bash
+# Format code with black
+black roo_code tests
+
+# Lint with ruff
+ruff check roo_code tests
+
+# Type check with mypy
+mypy roo_code
+```
+
+### Project Structure
+
+```
+roo-code-python/
+├── roo_code/              # Main package
+│   ├── agent.py          # Agent orchestration
+│   ├── client.py         # Multi-provider client
+│   ├── tools.py          # Tool execution framework
+│   ├── types.py          # Type definitions
+│   ├── builtin_tools/    # Built-in tool implementations
+│   ├── mcp/              # MCP integration
+│   ├── modes/            # Mode system
+│   └── providers/        # Provider adapters
+├── tests/                # Test suite
+├── examples/             # Usage examples
+├── docs/                 # Documentation
+└── pyproject.toml        # Project configuration
+```
+
+## 📚 Examples
+
+The [`examples/`](examples/) directory contains comprehensive examples:
+
+- **[`basic_usage.py`](examples/basic_usage.py)** - Basic client usage, streaming, multi-turn conversations
+- **[`mode_usage.py`](examples/mode_usage.py)** - Mode-based agents and mode switching
+- **[`agentic_example.py`](examples/agentic_example.py)** - Advanced agent with tool usage
+- **[`recreate_mcp_server.py`](examples/recreate_mcp_server.py)** - MCP server integration
+- **[`recreate_python_interpreter.py`](examples/recreate_python_interpreter.py)** - Building an interpreter with tools
+
+Run any example:
+
+```bash
+python examples/basic_usage.py
+```
+
+## 📖 Documentation
+
+Comprehensive documentation is available in the [`docs/`](docs/) directory:
+
+- **[`modes.md`](docs/modes.md)** - Complete mode system documentation
+- **[`SYSTEM_FLOW.md`](docs/SYSTEM_FLOW.md)** - System architecture and data flow
+- **[`builtin_tools/README.md`](roo_code/builtin_tools/README.md)** - Tool system documentation
+
+## 🤝 Contributing
+
+We welcome contributions! Please see our contributing guidelines:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Make your changes with tests
+4. Run tests and quality checks
+5. Commit your changes (`git commit -m 'Add amazing feature'`)
+6. Push to the branch (`git push origin feature/amazing-feature`)
+7. Open a Pull Request
+
+## 📝 License
+
+This project is licensed under the Apache License 2.0 - see the LICENSE file for details.
+
+## 🔗 Links
+
+- **Homepage**: [https://github.com/RooCodeInc/Roo-Code](https://github.com/RooCodeInc/Roo-Code)
+- **Documentation**: [https://docs.roocode.com](https://docs.roocode.com)
+- **Issues**: [https://github.com/RooCodeInc/Roo-Code/issues](https://github.com/RooCodeInc/Roo-Code/issues)
+- **MCP Documentation**: [https://modelcontextprotocol.io](https://modelcontextprotocol.io)
+
+## 🙏 Acknowledgments
+
+Built with:
+- [Anthropic Claude](https://www.anthropic.com/) - AI capabilities
+- [OpenAI](https://openai.com/) - GPT models
+- [Model Context Protocol](https://modelcontextprotocol.io/) - Extensibility framework
+- [Playwright](https://playwright.dev/) - Browser automation
+- [Tree-sitter](https://tree-sitter.github.io/) - Code parsing
+
+---
+
+**Note**: This SDK is in alpha development. APIs may change. Please report issues and feedback via GitHub Issues.
