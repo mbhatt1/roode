@@ -8,6 +8,9 @@
 
 Roode is a powerful Python framework for building AI agents that can interact with codebases, execute commands, browse the web, and integrate with external tools through the Model Context Protocol (MCP).
 
+<img width="352" height="410" alt="image" src="https://github.com/user-attachments/assets/996b905f-9416-434e-a7f9-4daefe935c94" />
+
+
 ## 🚀 Key Features
 
 ### Multi-Mode AI Agents
