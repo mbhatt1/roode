@@ -9,6 +9,7 @@ from .groq import GroqProvider
 from .mistral import MistralProvider
 from .deepseek import DeepSeekProvider
 from .ollama import OllamaProvider
+from .bedrock import BedrockProvider
 
 __all__ = [
     "BaseProvider",
@@ -20,4 +21,5 @@ __all__ = [
     "MistralProvider",
     "DeepSeekProvider",
     "OllamaProvider",
+    "BedrockProvider",
 ]

@@ -21,6 +21,7 @@ from .providers import (
     MistralProvider,
     DeepSeekProvider,
     OllamaProvider,
+    BedrockProvider,
     BaseProvider,
 )
 
@@ -102,6 +103,7 @@ class RooClient:
             ApiProvider.MISTRAL: MistralProvider,
             ApiProvider.DEEPSEEK: DeepSeekProvider,
             ApiProvider.OLLAMA: OllamaProvider,
+            ApiProvider.BEDROCK: BedrockProvider,
             ApiProvider.LMSTUDIO: OpenAIProvider,  # LM Studio is OpenAI-compatible
             ApiProvider.DEEPINFRA: OpenAIProvider,  # DeepInfra is OpenAI-compatible
             ApiProvider.XAI: OpenAIProvider,  # xAI is OpenAI-compatible

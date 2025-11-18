@@ -1,0 +1,19 @@
+# Troubleshooting Guide  
+
+## Common Errors
+
+### Error: "Could not connect to server"
+- Check if server is running...
+
+### Error: "Missing dependency"
+- Install missing dependency...
+
+## Debugging Techniques
+
+- Use browser devtools...
+- Enable logging...
+- Check network requests...
+
+## Getting Help
+
+If you can't resolve an issue, check Stack Overflow or create an issue on the project GitHub repo...

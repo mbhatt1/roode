@@ -1,0 +1,5 @@
+<ul>
+  {% for item in site.data.navigation.docs %}
+    <li><a href="{{ item.link }}">{{ item.text }}</a></li>
+  {% endfor %}
+</ul>

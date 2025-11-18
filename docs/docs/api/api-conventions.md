@@ -1,0 +1,13 @@
+# API Conventions
+
+## Error Handling
+...
+
+## Authentication and Authorization 
+...  
+
+## Naming Conventions
+...
+
+## Cross-cutting Concerns
+...

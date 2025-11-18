@@ -1,0 +1,16 @@
+title: Foo Docs
+description: Documentation for the Foo project
+url: https://example.com
+theme: just-the-docs
+
+plugins:
+  - jekyll-seo-tag
+  - jekyll-sitemap
+
+collections:
+  api:
+    output: true
+  guides:
+    output: true
+  tutorials: 
+    output: true

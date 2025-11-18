@@ -1,6 +1,6 @@
 """Tool definitions and handling for agentic capabilities"""
 
-from typing import Any, Callable, Dict, List, Optional, Union, TYPE_CHECKING
+from typing import Any, Callable, Dict, List, Optional, Union, TYPE_CHECKING, cast
 from pydantic import BaseModel, Field
 from enum import Enum
 import logging
@@ -51,6 +51,11 @@ class ToolResult(BaseModel):
     tool_use_id: str
     content: Union[str, List[Dict[str, Any]]]
     is_error: bool = False
+    exception: Optional[Any] = None  # Use Any instead of Exception for better Pydantic compatibility
+    
+    model_config = {
+        "arbitrary_types_allowed": True,  # Allow non-serializable types like Exception
+    }
 
 
 class Tool:
@@ -452,6 +457,7 @@ class FunctionTool(Tool):
                 tool_use_id=self.current_use_id,
                 content=result_str,
                 is_error=False,
+                exception=None
             )
         except Exception as e:
             logger.error(f"FUNCTION_TOOL: Function '{self.name}' failed: {type(e).__name__}: {str(e)}")
@@ -459,6 +465,7 @@ class FunctionTool(Tool):
                 tool_use_id=self.current_use_id,
                 content=f"Error executing tool: {str(e)}",
                 is_error=True,
+                exception=e
             )
 
 
@@ -576,6 +583,7 @@ class ToolRegistry:
                 tool_use_id=tool_use.id,
                 content=error_msg,
                 is_error=True,
+                exception=None
             )
         
         tool.current_use_id = tool_use.id
@@ -583,9 +591,19 @@ class ToolRegistry:
         # Use execute_with_recovery if retry is enabled
         if tool.enable_retry or tool.enable_circuit_breaker:
             logger.debug(f"REGISTRY: Tool '{tool_use.name}' has recovery enabled (retry: {tool.enable_retry}, circuit_breaker: {tool.enable_circuit_breaker})")
-            return await tool.execute_with_recovery(tool_use.input)
+            result = await tool.execute_with_recovery(tool_use.input)
         else:
             logger.debug(f"REGISTRY: Tool '{tool_use.name}' executing without recovery")
             result = await tool.execute(tool_use.input)
-            logger.info(f"REGISTRY: Tool '{tool_use.name}' completed - is_error: {result.is_error}")
-            return result
+        
+        # Log detailed error information
+        if result.is_error:
+            exception_details = ""
+            if hasattr(result, 'exception') and result.exception:
+                exception_details = f" - Exception: {type(result.exception).__name__}: {str(result.exception)}"
+            logger.error(f"REGISTRY: Tool '{tool_use.name}' completed with error{exception_details}")
+            logger.error(f"REGISTRY: Error content: {result.content}")
+        else:
+            logger.info(f"REGISTRY: Tool '{tool_use.name}' completed successfully")
+            
+        return result
